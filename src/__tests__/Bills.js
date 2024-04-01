@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import {screen, waitFor} from "@testing-library/dom"
+import {fireEvent, screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import { ROUTES_PATH} from "../constants/routes.js";
@@ -26,7 +26,7 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
       //to-do write expect expression
-
+      expect(windowIcon.getAttribute('class')).toMatch(/active-icon/gi)
     })
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
@@ -35,5 +35,17 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
+    test("Then I can perform actions on a bill", () => {
+      // Simuler le clic sur une action (détail : oeil)
+      const bill = bills.slice(-1); // Sélectionner une facture pour le test
+      document.body.innerHTML = BillsUI({ data: bill });
+      const actionButton = screen.getByTestId("icon-eye");
+      fireEvent.click(actionButton);
+      
+      // Attendre que l'action soit effectuée
+      waitFor(() => {
+        expect(screen.getAllByTestId("modaleFile").getAttribute("aria-hidden")).toEqual("visible")
+      });
+    });
   })
 })

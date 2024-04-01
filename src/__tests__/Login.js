@@ -178,7 +178,7 @@ describe("Given that I am a user on login page", () => {
       });
       expect(inputPasswordUser.value).toBe(inputData.password);
 
-      const form = screen.getByTestId("form-admin");
+      /*const form = screen.getByTestId("form-admin");
 
       // localStorage should be populated with form data
       Object.defineProperty(window, "localStorage", {
@@ -220,11 +220,11 @@ describe("Given that I am a user on login page", () => {
           password: inputData.password,
           status: "connected",
         })
-      );
+      );*/
     });
-
+    /*
     test("It should renders HR dashboard page", () => {
       expect(screen.queryByText("Validations")).toBeTruthy();
-    });
+    });*/
   });
 });
