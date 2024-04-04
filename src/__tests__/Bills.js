@@ -26,7 +26,7 @@ describe("Given I am connected as an employee", () => {
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
       //to-do write expect expression
-      expect(windowIcon.getAttribute('class')).toMatch(/active-icon/gi)
+      expect(windowIcon.getAttribute('class')).toEqual("active-icon")
     })
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
@@ -45,6 +45,16 @@ describe("Given I am connected as an employee", () => {
       // Attendre que l'action soit effectuée
       waitFor(() => {
         expect(screen.getAllByTestId("modaleFile").getAttribute("aria-hidden")).toEqual("visible")
+      });
+    });
+    test("Then I can perform new bill action", () => {
+      // Simuler le clic sur une action (new bill)
+      const actionButton = screen.getByTestId("btn-new-bill");
+      fireEvent.click(actionButton);
+      
+      // Attendre que l'action soit effectuée
+      waitFor(() => {
+        expect(screen.getByTestId("form-new-bill"))
       });
     });
   })
