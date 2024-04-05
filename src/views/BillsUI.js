@@ -112,3 +112,22 @@ export default ({
 //.join("") : Cela rejoint toutes les lignes de tableau HTML générées en une seule chaîne de caractères. Cette chaîne de caractères représente le contenu complet des lignes de tableau HTML.
 
 //: "" : C'est la partie de la condition ternaire qui est exécutée si la condition initiale (data && data.length) est fausse, ce qui signifie que data est vide ou non défini. Dans ce cas, la chaîne vide "" est retournée.
+//-----------------------
+// Ajoutez des filtres pour afficher uniquement les données appropriées pour l'utilisateur connecté
+const filterBillsForUser = (bills, userType) => {
+  if (userType === 'Employee') {
+    // Filtrez les factures pour afficher uniquement celles de l'utilisateur connecté en tant qu'employé
+    const currentUserEmail = JSON.parse(localStorage.getItem('user')).email;
+    return bills.filter(bill => bill.email === currentUserEmail);
+  } else {
+    // Pour d'autres types d'utilisateurs ou administrateurs, affichez toutes les factures
+    return bills;
+  }
+}
+
+const displayBills = (bills, userType) => {
+  const filteredBills = filterBillsForUser(bills, userType);
+  // Affichez les factures filtrées dans l'interface utilisateur
+  // Ajoutez le code pour afficher les factures dans l'interface utilisateur en fonction du type d'utilisateur
+}
+
