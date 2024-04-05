@@ -5,16 +5,18 @@ export let PREVIOUS_LOCATION = ''
 // we use a class so as to test its methods in e2e tests
 export default class Login {
   constructor({ document, localStorage, onNavigate, PREVIOUS_LOCATION, store }) {
-    this.document = document
-    this.localStorage = localStorage
-    this.onNavigate = onNavigate
-    this.PREVIOUS_LOCATION = PREVIOUS_LOCATION
-    this.store = store
+    // Initialize class properties
+    this.document = document // Reference to the document object
+    this.localStorage = localStorage // Reference to the localStorage object
+    this.onNavigate = onNavigate // Callback function for navigation
+    this.PREVIOUS_LOCATION = PREVIOUS_LOCATION // Previous location
+    this.store = store // Store object
     const formEmployee = this.document.querySelector(`form[data-testid="form-employee"]`)
     formEmployee.addEventListener("submit", this.handleSubmitEmployee)
     const formAdmin = this.document.querySelector(`form[data-testid="form-admin"]`)
     formAdmin.addEventListener("submit", this.handleSubmitAdmin)
   }
+  
   handleSubmitEmployee = e => {
     e.preventDefault()
     const user = {
@@ -24,6 +26,7 @@ export default class Login {
       status: "connected"
     }
     this.localStorage.setItem("user", JSON.stringify(user))
+    //login user et handle navigation
     this.login(user)
       .catch(
         (err) => this.createUser(user)
@@ -37,14 +40,22 @@ export default class Login {
 
   }
 
+  //test 2, exe2: "Login, si un administrateur remplit correctement les champs du Login, 
+  //il devrait naviguer sur la page Dashboard",
+  // passer le test au vert en réparant la fonctionnalité.
+
   handleSubmitAdmin = e => {
     e.preventDefault()
+    // Extract user information from the form
     const user = {
       type: "Admin",
+      //[bug report] login tache 1 exe2 naviger vers Dashbord
       email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
       password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
       status: "connected"
     }
+    //store user informationdans localStorage
+    //login user et handle navigation
     this.localStorage.setItem("user", JSON.stringify(user))
     this.login(user)
       .catch(
