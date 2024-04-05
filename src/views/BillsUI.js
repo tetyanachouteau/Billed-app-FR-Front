@@ -1,3 +1,7 @@
+//les fichiers BillsUI.js et NewBillUI.js, qui 
+//sont responsables de l'affichage des factures et 
+//de la création de nouvelles factures respectivemen
+
 import VerticalLayout from './VerticalLayout.js'
 import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
