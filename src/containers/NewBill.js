@@ -1,5 +1,3 @@
-//exe3 d'jpg, ligne 25, Vérifier si le fichier est au format JPG, PNG ou JPEG
-
 //connecté en tant qu'employé, je saisis une note de frais avec un justificatif 
 //qui a une extension différente de jpg, jpeg ou png, j'envoie. 
 //J'arrive sur la page Bills, je clique sur l'icône "voir" pour consulter le justificatif : 
@@ -32,33 +30,18 @@ export default class NewBill { // Définition de la classe NewBill
     const filePath = e.target.value.split(/\\/g) // Séparation du chemin du fichier
     const fileName = filePath[filePath.length-1] // Récupération du nom du fichier
 
-    //exe3
+    //[bug report - exe3] ne plus autoriser les fichiers autre que jpg, png, jpeg pour éviter le non 
+    // afffichage de l'image dans la modale
     // Vérifier si le fichier est au format JPG, PNG ou JPEG
     const allowedExtensions = ["jpg", "jpeg", "png"]; // Extensions de fichier autorisées
     const fileExtension = fileName.split(".").pop().toLowerCase(); // Extension du fichier choisi
 
-    //const allowedExtensions = ["jpg", "jpeg", "png"];: 
-    //Cette ligne crée un tableau contenant les extensions de fichiers autorisées,
-    // à savoir "jpg", "jpeg" et "png".
-// fileName.split(".").pop().toLowerCase();: Ici, le nom de fichier est extrait 
-//à partir du chemin complet du fichier et divisé en parties en utilisant le point (".") 
-//comme séparateur. La méthode pop() récupère la dernière partie du nom de fichier, qui est l'extension du fichier. Ensuite, toLowerCase() est utilisé pour s'assurer que l'extension est en minuscules, ce qui est utile pour comparer les extensions de fichiers ultérieurement.
-
-//if (!allowedExtensions.includes(fileExtension)) {
-//: Cette condition vérifie si l'extension du fichier n'est pas incluse dans le tableau 
-//allowedExtensions. Si c'est le cas, cela signifie que le fichier n'est 
-//pas au format JPG, JPEG ou PNG, donc le bloc de code suivant est exécuté.
-
-//e.target.value = "";: Cette ligne réinitialise la valeur du champ de fichier 
-//à une chaîne vide, ce qui efface le fichier choisi par l'utilisateur dans le formulaire.
-//console.error("Pas bon format de fichier");: Cela affiche un message d'erreur dans la console indiquant que le format du fichier n'est pas pris en charge.
-
-//return;: Cette instruction arrête l'exécution de la méthode, empêchant ainsi le téléversement du fichier.
     if (!allowedExtensions.includes(fileExtension)) { // Si l'extension n'est pas autorisée
       e.target.value = ""; // Effacer la valeur du champ de fichier
       console.error("Pas bon format de fichier"); // Afficher un message d'erreur dans la console
       return; // Arrêter l'exécution de la méthode si le format n'est pas pris en charge
     }
+    //[/bug report - exe3]
 
     const formData = new FormData() // Création d'un objet FormData pour envoyer le fichier
     const email = JSON.parse(localStorage.getItem("user")).email // Récupération de l'e-mail de l'utilisateur

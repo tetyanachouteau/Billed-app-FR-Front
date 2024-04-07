@@ -160,7 +160,6 @@ export default class {
     $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
   }
 
-  // exe4 Gère la soumission du formulaire d'acceptation ou de refus d'une facture
   //Je suis connecté en tant qu'administrateur RH, je déplie une liste de tickets
   // (par exemple : statut "validé"), je sélectionne un ticket, puis 
   //je déplie une seconde liste (par exemple : statut "refusé"),
@@ -192,7 +191,6 @@ export default class {
     if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
     if (this.counter % 2 === 0) {
-      console.log("handleShowTickets" + this.counter);
       $(`#arrow-icon${this.index}`).css({
         transform: 'rotate(0deg)'
       })
@@ -200,7 +198,6 @@ export default class {
         .html(cards(filteredBills(bills, getStatus(this.index))))
       this.counter++
     } else {
-      console.log("handleShowTickets" + this.counter);
       $(`#arrow-icon${this.index}`).css({
         transform: 'rotate(90deg)'
       })
@@ -216,6 +213,9 @@ export default class {
     // la méthode handleEditTicket est appelée avec 
     //les paramètres appropriés (l'événement, la facture et le tableau complet des factures).
     bills.forEach(bill => {
+      //[bug report - exe4] L'event sur les ligne de facture ne doivent concerner que les factures du regroupement
+      // déplié sinon il ne retourve pas le container et on n'arrive pas à sélectionner la facture
+      // #status-bills-container${this.index}       
       $(`#status-bills-container${this.index} #open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })
 

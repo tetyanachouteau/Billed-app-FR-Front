@@ -40,16 +40,14 @@ export default class Login {
 
   }
 
-  //test 2, exe2: "Login, si un administrateur remplit correctement les champs du Login, 
-  //il devrait naviguer sur la page Dashboard",
-  // passer le test au vert en réparant la fonctionnalité.
-
   handleSubmitAdmin = e => {
     e.preventDefault()
     // Extract user information from the form
     const user = {
       type: "Admin",
-      //[bug report] login tache 1 exe2 naviger vers Dashbord
+      //[bug report - exe2] login admin qui fonctionne pour naviger vers Dashbord
+      // `input[data-testid="employee-email-input"]` -> `input[data-testid="admin-email-input"]`
+      // `input[data-testid="employee-password-input"]` -> `input[data-testid="admin-password-input"]`
       email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
       password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
       status: "connected"

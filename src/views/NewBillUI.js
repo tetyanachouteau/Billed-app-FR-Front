@@ -1,21 +1,4 @@
 import VerticalLayout from './VerticalLayout.js'
-import NewBillsUI from "./_tests_/NewBillUI.js"
-
-// Ajoutez une vérification pour personnaliser l'interface utilisateur en fonction du type d'utilisateur
-const customizeUIForUser = (userType) => {
-  if (userType === 'Employee') {
-    // Masquez certaines fonctionnalités réservées aux administrateurs pour les employés
-    // Par exemple, masquez les options de modification ou de suppression de facture
-  } else {
-    // Pour d'autres types d'utilisateurs ou administrateurs, affichez toutes les fonctionnalités
-  }
-}
-
-const displayNewBillUI = (userType) => {
-  // Personnalisez l'interface utilisateur en fonction du type d'utilisateur
-  customizeUIForUser(userType);
-  // Ajoutez le code pour afficher le formulaire de création de facture dans l'interface utilisateur
-}
 
 export default () => {
 

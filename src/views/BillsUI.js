@@ -23,12 +23,13 @@ const row = (bill) => {
     `)
 }
 // Fonction pour générer plusieurs lignes de tableau HTML à partir d'un tableau de données de factures
-//exe1 : data factures
 // trie les données de factures par date décroissante, 
 //génère les lignes de tableau HTML correspondantes à partir de ces données triées, 
 //puis les joint en une seule chaîne de caractères. 
 //Si les données de factures sont vides ou non définies, une chaîne vide est retournée.
 const rows = (data) => {
+  //[bug report - exe1] Ajout du même tri par date ordre décoissant des factures pour faire passer le test
+  // .sort((a, b) => ((a.date < b.date) ? 1 : -1))
   return (data && data.length) ? data.sort((a, b) => ((a.date < b.date) ? 1 : -1)).map(bill => row(bill)).join("") : ""
 }
 
@@ -99,35 +100,3 @@ export default ({
       ${modal()}
     </div>`)
 }
-
-
-//exe1:  (data && data.length) : C'est une condition vérifiant si data existe et s'il contient des éléments. Cela garantit que la logique suivante n'est exécutée que si data est défini et qu'il contient au moins un élément.
-
-//? ... : ... : C'est l'opérateur ternaire, qui est utilisé ici pour conditionner le choix entre deux valeurs à retourner en fonction de la condition précédente.
-
-//data.sort((a, b) => ((a.date < b.date) ? 1 : -1)) : C'est la première partie de l'opérateur ternaire. Cela trie les données de factures par date décroissante en utilisant sort(). La fonction de comparaison passée à sort() renvoie 1 si a.date est inférieur à b.date, ce qui place a après b dans le tableau trié, et -1 dans le cas contraire, ce qui place a avant b.
-
-//.map(bill => row(bill)) : C'est la deuxième partie de l'opérateur ternaire. Cela transforme chaque objet de facture trié en une ligne de tableau HTML en utilisant la fonction row.
-
-//.join("") : Cela rejoint toutes les lignes de tableau HTML générées en une seule chaîne de caractères. Cette chaîne de caractères représente le contenu complet des lignes de tableau HTML.
-
-//: "" : C'est la partie de la condition ternaire qui est exécutée si la condition initiale (data && data.length) est fausse, ce qui signifie que data est vide ou non défini. Dans ce cas, la chaîne vide "" est retournée.
-//-----------------------
-// Ajoutez des filtres pour afficher uniquement les données appropriées pour l'utilisateur connecté
-const filterBillsForUser = (bills, userType) => {
-  if (userType === 'Employee') {
-    // Filtrez les factures pour afficher uniquement celles de l'utilisateur connecté en tant qu'employé
-    const currentUserEmail = JSON.parse(localStorage.getItem('user')).email;
-    return bills.filter(bill => bill.email === currentUserEmail);
-  } else {
-    // Pour d'autres types d'utilisateurs ou administrateurs, affichez toutes les factures
-    return bills;
-  }
-}
-
-const displayBills = (bills, userType) => {
-  const filteredBills = filterBillsForUser(bills, userType);
-  // Affichez les factures filtrées dans l'interface utilisateur
-  // Ajoutez le code pour afficher les factures dans l'interface utilisateur en fonction du type d'utilisateur
-}
-
