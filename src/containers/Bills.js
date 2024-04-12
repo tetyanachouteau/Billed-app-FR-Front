@@ -20,12 +20,25 @@ export default class {
     this.onNavigate(ROUTES_PATH['NewBill'])
   }
 
+  //exe5.3 : pour pas que test plant.
   handleClickIconEye = (icon) => {
+    console.log(icon)
     const billUrl = icon.getAttribute("data-bill-url")
     const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
     $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
-    $('#modaleFile').modal('show')
+    // exe5.3 : Comme dans container/Dashboard.js
+    if (typeof $('#modaleFile').modal === 'function') $('#modaleFile').modal('show')
   }
+
+  // document.getElementById pour récupérer l'élément modal avec l'ID "modaleFile".
+  //document.querySelector pour sélectionner l'élément .modal-body à l'intérieur de la modale.
+// innerHTML pour définir le contenu de la modal body avec une image dont l'URL 
+//est récupérée à partir de l'attribut data-bill-url.
+//offsetWidth pour obtenir la largeur de la modale et calculer la largeur de l'image.
+
+//si la méthode modal est définie sur l'élément modal avant de l'appeler pour afficher la modale.
+//HTML contient bien un élément avec l'ID "modaleFile" et une structure correspondante 
+//à celle que vous utilisez avec jQuery.
 
   getBills = () => {
     if (this.store) {

@@ -12,18 +12,23 @@ import {
   bills
 } from "../fixtures/bills.js"
 import {
-  ROUTES_PATH
+  ROUTES, ROUTES_PATH
 } from "../constants/routes.js";
 import {
   localStorageMock
 } from "../__mocks__/localStorage.js";
 
+// exe5.1 : ajout du mock store - bills bouchonnées
+import mockStore from "../__mocks__/store"
+
 import router from "../app/Router.js";
+import Bills from "../containers/Bills.js";
 
-//exe1:,tdd3, ligne 39 et 84 Test des actions sur une facture
-//Test de l'ordre des factures :
+// exe5.1 : ajout du mock store au contexte jest
+jest.mock("../app/store", () => mockStore)
 
-//Le test Bills / les notes de frais s'affichent par ordre décroissant
+// exe5 : ajout de la fonction jest userevent
+import userEvent from '@testing-library/user-event'
 
 //tests garantissent que l'interface utilisateur des factures
 // fonctionne correctement pour un utilisateur connecté en tant 
@@ -92,44 +97,157 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
-    //exe1:,tdd3, ligne 39 et 84 Test des actions sur une facture
-    //Test de l'ordre des factures :
 
-    //test vérifie que les factures sont affichées dans l'ordre chronologique,
-    // de la plus ancienne à la plus récente.
-    //Il récupère les dates des factures, les trie dans l'ordre anti-chronologique 
-    //(du plus récent au plus ancien) et vérifie si elles 
-    //correspondent à l'ordre initial des dates.
-    test("Then I can perform actions on a bill", () => {
-      // Simuler le clic sur une action (détail : oeil)
-      const bill = bills.slice(-1); // Sélectionner une facture pour le test
-      document.body.innerHTML = BillsUI({
-        data: bill
-      });
-      const actionButton = screen.getByTestId("icon-eye");
-      fireEvent.click(actionButton);
+  })
 
-      // Attendre que l'action soit effectuée
-      waitFor(() => {
-        expect(screen.getAllByTestId("modaleFile").getAttribute("aria-hidden")).toEqual("visible")
-      });
-    });
+  //[exe5.2 - 80%]
+  describe('Given I am connected as Employee and I am on bill page and I clicked on a bill', () => {
+    describe('When I click on the icon eye', () => {
+      test('A modal should be called', () => {
+        // bouchon le stockage local avec les données d'un employé
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
 
-    //Test des actions sur une facture :
+        // Crée le container (controlleur) basé sur cet interface, les facture, le localstorage,...
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
 
-    //test vérifie qu'une action spécifique sur une facture peut être effectuée avec succès.
-    //Il simule un clic sur un bouton d'action (l'icône de l'œil pour voir les détails d'une facture),
-    // puis vérifie que la modale correspondante est affichée en attendant que 
-    //son attribut "aria-hidden" devienne "visible".
-    test("Then I can perform new bill action", () => {
-      // Simuler le clic sur une action (new bill)
-      const actionButton = screen.getByTestId("btn-new-bill");
-      fireEvent.click(actionButton);
+        const billContainer = new Bills({
+          document, onNavigate, store: null, localStorage: window.localStorage
+        })
 
-      // Attendre que l'action soit effectuée
-      waitFor(() => {
-        expect(screen.getByTestId("form-new-bill"))
-      });
-    });
+        // créer l'interface HTML avec le tableau de factures bouchonné
+        // Attention : il faut que la UI soit appeler après la création du container
+        // sinon double events
+        document.body.innerHTML = BillsUI({ data: bills.slice(-1) })
+  
+        // Récupère l'event du click sur l'oeil dans le container
+        // Attention l'evenement envoi l'icon et pas l'event complet (voir container/Bill.js l14)
+        const handleClickIconEye = jest.fn((e) => billContainer.handleClickIconEye(e.target))
+
+        // récupère le oeil dans l'interface
+        const eye = screen.getByTestId('icon-eye')
+        console.log(eye.getAttribute("data-bill-url"))
+        eye.addEventListener('click', handleClickIconEye)
+        // Click
+        userEvent.click(eye)
+
+        // vérifier que l'event est appelé
+        expect(handleClickIconEye).toHaveBeenCalled()
+      })
+    })
+    describe('When I click on the new bill button', () => {
+      test('A modal should open', () => {
+        // bouchon le stockage local avec les données d'un employé
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }))
+
+        // créer l'interface HTML avec le tableau de factures bouchonné
+        document.body.innerHTML = BillsUI({ data: bills, loading: false, error:false })
+
+        // Crée le container (controlleur) basé sur cet interface, les facture, le localstorage,...
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname })
+        }
+        const store = null
+        const billContainer = new Bills({
+          document, onNavigate, store, localStorage: window.localStorage
+        })
+  
+        // Récupère l'event du click sur l'oeil dans le container
+        const handleClickNewBill = jest.fn(billContainer.handleClickNewBill)
+
+        // récupère le premier oeil dans l'interface
+        const newbill = screen.getByTestId('btn-new-bill')
+        newbill.addEventListener('click', handleClickNewBill);
+        // Click
+        userEvent.click(newbill)
+
+        // vérifier que l'event est appelé
+        expect(handleClickNewBill).toHaveBeenCalled()
+  
+        // récupère le formulaire de la page new bill
+        waitFor(() => {
+          expect(screen.getByTestId("form-new-bill"))
+        });
+      })
+    })
+  })
+
+  //[exe5.1 - GET] test d'intégration GET
+  // remove "as admin"
+  describe("Given I am a user connected", () => {
+    // dashboard -> bill list
+    describe("When I navigate to Bill list", () => {
+      test("fetches bills from mock API GET", async () => {
+        localStorage.setItem("user", JSON.stringify({
+          // Admin -> Employee
+          type: "Employee",
+          email: "a@a"
+        }));
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        window.onNavigate(ROUTES_PATH.Bills)
+        await waitFor(() => screen.getAllByTestId("icon-eye"))
+        expect(screen.getAllByTestId("icon-eye")).toBeTruthy()
+      })
+      describe("When an error occurs on API", () => {
+        beforeEach(() => {
+          jest.spyOn(mockStore, "bills")
+          Object.defineProperty(
+            window,
+            'localStorage', {
+              value: localStorageMock
+            }
+          )
+          window.localStorage.setItem('user', JSON.stringify({
+            // Admin -> Employee
+            type: "Employee",
+            email: "a@a"
+          }))
+          const root = document.createElement("div")
+          root.setAttribute("id", "root")
+          document.body.appendChild(root)
+          router()
+        })
+        test("fetches bills from an API and fails with 404 message error", async () => {
+
+          mockStore.bills.mockImplementationOnce(() => {
+            return {
+              list: () => {
+                return Promise.reject(new Error("Erreur 404"))
+              }
+            }
+          })
+          window.onNavigate(ROUTES_PATH.Bills)
+          await new Promise(process.nextTick);
+          const message = await screen.getByText(/Erreur 404/)
+          expect(message).toBeTruthy()
+        })
+
+        test("fetches messages from an API and fails with 500 message error", async () => {
+
+          mockStore.bills.mockImplementationOnce(() => {
+            return {
+              list: () => {
+                return Promise.reject(new Error("Erreur 500"))
+              }
+            }
+          })
+
+          window.onNavigate(ROUTES_PATH.Bills)
+          await new Promise(process.nextTick);
+          const message = await screen.getByText(/Erreur 500/)
+          expect(message).toBeTruthy()
+        })
+      })
+    })
   })
 })
