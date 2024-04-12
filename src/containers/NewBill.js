@@ -6,7 +6,8 @@
 //Si je me connecte à présent en tant qu'Admin, et que je clique sur le ticket correspondant,
 // le nom du fichier affiché est null. De même, lorsque je clique sur l'icône "voir" pour consulter le justificatif : la modale s'ouvre, mais il n'y a pas d'image.
 
-// import { ROUTES_PATH } from '../constants/routes.js' // Importation du chemin des routes (commenté car non utilisé dans ce fichier)
+import { ROUTES_PATH } from '../constants/routes.js'
+
 import Logout from "./Logout.js" // Importation du composant de déconnexion
 
 export default class NewBill { // Définition de la classe NewBill
@@ -26,8 +27,12 @@ export default class NewBill { // Définition de la classe NewBill
 
   handleChangeFile = e => { // Méthode pour gérer le changement de fichier
     e.preventDefault() // Empêcher le comportement par défaut du formulaire
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0] // Sélection du fichier choisi
-    const filePath = e.target.value.split(/\\/g) // Séparation du chemin du fichier
+    //[exeMentor] On change comment on récupère le champs input file sinon on ne peut pas tester car 
+    // quand on simule on n'agit pas sur le champs html directement mais sur l'event
+    // Donc peut pas faire de querySelector (html) mais c'est pareil de le récupère depuis l'event
+    const file = e.target.files[0] // Sélection du fichier choisi
+    // exe5 : le nom du fichier vient du file sinon on ne peut pas tester la suite
+    const filePath = e.target.files[0].name.split(/\\/g) // Séparation du chemin du fichier
     const fileName = filePath[filePath.length-1] // Récupération du nom du fichier
 
     //[bug report - exe3] ne plus autoriser les fichiers autre que jpg, png, jpeg pour éviter le non 
@@ -82,7 +87,7 @@ export default class NewBill { // Définition de la classe NewBill
       status: 'pending' // Attribution du statut de la facture (en attente)
     }
     this.updateBill(bill) // Mise à jour de la facture dans le magasin de données
-    // this.onNavigate(ROUTES_PATH['Bills']) // Navigation vers la page des factures (commenté car ROUTES_PATH n'est pas importé)
+    this.onNavigate(ROUTES_PATH['Bills'])
   }
 
   // not need to cover this function by tests
@@ -92,7 +97,7 @@ export default class NewBill { // Définition de la classe NewBill
       .bills()
       .update({data: JSON.stringify(bill), selector: this.billId})
       .then(() => {
-        // this.onNavigate(ROUTES_PATH['Bills']) // Navigation vers la page des factures (commenté car ROUTES_PATH n'est pas importé)
+        this.onNavigate(ROUTES_PATH['Bills']) 
       })
       .catch(error => console.error(error)) // Gestion des erreurs
     }
