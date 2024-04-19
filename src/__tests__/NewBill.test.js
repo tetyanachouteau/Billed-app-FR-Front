@@ -194,57 +194,130 @@ describe("Given I am connected as an employee", () => {
       });
 
     });
+    /*
+        //[exementor - POST Mentor] test d'intégration POST
+        describe("When an error occurs on API", () => {
+          beforeEach(() => {
+            jest.spyOn(mockStore, "bills")
+          })
 
-    //[exementor - POST Mentor] test d'intégration POST
+          
+          test("fetches messages from an API and fails with 500 message error", async () => {
+
+            mockStore.bills.mockImplementationOnce(() => {
+              return {
+                // Car quand on envoye une nouvelle note de frais on appelle la méthode update du store (NewBill.js ligne 99)
+                // ici on dit qu'elle retourne une erreur 500
+                update: () => {
+                  return Promise.reject(new Error("Erreur 500"))
+                }
+              }
+            })
+
+            // Récupère l'input file (selection du fichier d'image)
+            const fileInput = screen.getByTestId("file");
+
+            // Créer un objet de type File avec un nom de fichier et un type correspondant à .png
+            const file = new File(["blabla"], "test.png", {
+              type: "image/png"
+            });
+
+            // Simuler le changement de fichier en déclenchant un événement de changement sur l'input de fichier
+            fireEvent.change(fileInput, {
+              target: {
+                files: [file]
+              }
+            });
+
+            // remplissage des autres champs du formulaire
+            screen.getByTestId("expense-type").value = "Transports";
+            screen.getByTestId("expense-name").value = "Test Expense";
+            screen.getByTestId("amount").value = 100;
+            screen.getByTestId("datepicker").value = "01/01/2099";
+            screen.getByTestId("vat").value = 12;
+            screen.getByTestId("pct").value = 20;
+            screen.getByTestId("commentary").value = "test";
+
+
+            const form = screen.getByTestId("form-new-bill");
+            fireEvent.submit(form);
+
+            await new Promise(process.nextTick);
+            const message = await screen.getByText(/Erreur/)
+            expect(message).toBeTruthy()
+          })
+        })
+    */
+  })
+
+})
+
+describe("Given I am a user connected", () => {
+  // dashboard -> bill list
+  describe("When I navigate on newBillPage", () => {
+    test("mock API Post", async () => {
+      //pour stocker la chaîne JSON dans le stockage local sous la clé "user".
+      localStorage.setItem("user", JSON.stringify({
+        // Admin -> Employee
+        type: "Employee",
+        email: "a@a"
+      }));
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.NewBill)
+      //voir plus bas //autrement: titre de la page
+      //await waitFor(() => screen.getAllByTestId("icon-eye"))
+      //expect(screen.getAllByTestId("icon-eye")).toBeTruthy()
+
+      await waitFor(() => screen.getAllByText("Envoyer"))
+      expect(screen.getAllByText("Envoyer")).toBeTruthy()
+    })
+    
     describe("When an error occurs on API", () => {
-      beforeEach(() => {
-        jest.spyOn(mockStore, "bills")
-      })
 
       test("fetches messages from an API and fails with 500 message error", async () => {
+        jest.spyOn(mockStore, "bills")
+        Object.defineProperty(
+          window,
+          'localStorage', {
+            value: localStorageMock
+          }
+        )
+        window.localStorage.setItem('user', JSON.stringify({
+          // Admin -> Employee
+          type: "Employee",
+          email: "a@a",
+          password: "employee",
+          statut: "connected",
+        }))
+        window.onNavigate(ROUTES_PATH.NewBill)
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+        const buttonSubmite=screen.getAllByText("Envoyer")
+        buttonSubmite[0].click()
 
         mockStore.bills.mockImplementationOnce(() => {
           return {
-            // Car quand on envoye une nouvelle note de frais on appelle la méthode update du store (NewBill.js ligne 99)
-            // ici on dit qu'elle retourne une erreur 500
-            update: () => {
+            create: (Bill) => {
               return Promise.reject(new Error("Erreur 500"))
             }
           }
         })
 
-        // Récupère l'input file (selection du fichier d'image)
-        const fileInput = screen.getByTestId("file");
-
-        // Créer un objet de type File avec un nom de fichier et un type correspondant à .png
-        const file = new File(["blabla"], "test.png", {
-          type: "image/png"
-        });
-
-        // Simuler le changement de fichier en déclenchant un événement de changement sur l'input de fichier
-        fireEvent.change(fileInput, {
-          target: {
-            files: [file]
-          }
-        });
-
-        // remplissage des autres champs du formulaire
-        screen.getByTestId("expense-type").value = "Transports";
-        screen.getByTestId("expense-name").value = "Test Expense";
-        screen.getByTestId("amount").value = 100;
-        screen.getByTestId("datepicker").value = "01/01/2099";
-        screen.getByTestId("vat").value = 12;
-        screen.getByTestId("pct").value = 20;
-        screen.getByTestId("commentary").value = "test";
-
-
-        const form = screen.getByTestId("form-new-bill");
-        fireEvent.submit(form);
-
+        window.onNavigate(ROUTES_PATH.NewBill)
         await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur/)
-        expect(message).toBeTruthy()
+        const message = screen.getByText(/Erreur 500/)
+        //parametre callback: arrow fonction anomyme  
+        await waitFor(()=>{
+          //attendre jusqu'au vrais (note de frais)
+          expect(message).toBeTruthy()
+        })
       })
     })
+
   })
 })
