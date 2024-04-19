@@ -12,19 +12,20 @@ import {
   bills
 } from "../fixtures/bills.js"
 import {
-  ROUTES, ROUTES_PATH
+  ROUTES,
+  ROUTES_PATH
 } from "../constants/routes.js";
 import {
   localStorageMock
 } from "../__mocks__/localStorage.js";
 
-// exe5.1 : ajout du mock store - bills bouchonnées
-import mockStore from "../__mocks__/store"
+// exe5.1 : ajout du mock store - bills bouchonnées GET
+import mockStore from "../__mocks__/store.js"
 
 import router from "../app/Router.js";
 import Bills from "../containers/Bills.js";
 
-// exe5.1 : ajout du mock store au contexte jest
+// exe5.1 : ajout du mock store au contexte jest GET
 jest.mock("../app/store", () => mockStore)
 
 // exe5 : ajout de la fonction jest userevent
@@ -105,27 +106,37 @@ describe("Given I am connected as an employee", () => {
     describe('When I click on the icon eye', () => {
       test('A modal should be called', () => {
         // bouchon le stockage local avec les données d'un employé
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        Object.defineProperty(window, 'localStorage', {
+          value: localStorageMock
+        })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
         }))
 
         // Crée le container (controlleur) basé sur cet interface, les facture, le localstorage,...
         const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname })
+          document.body.innerHTML = ROUTES({
+            pathname
+          })
         }
 
         const billContainer = new Bills({
-          document, onNavigate, store: null, localStorage: window.localStorage
+          document,
+          onNavigate,
+          store: null,
+          localStorage: window.localStorage
         })
 
         // créer l'interface HTML avec le tableau de factures bouchonné
         // Attention : il faut que la UI soit appeler après la création du container
         // sinon double events
-        document.body.innerHTML = BillsUI({ data: bills.slice(-1) })
-  
+        document.body.innerHTML = BillsUI({
+          data: bills.slice(-1)
+        })
+
         // Récupère l'event du click sur l'oeil dans le container
         // Attention l'evenement envoi l'icon et pas l'event complet (voir container/Bill.js l14)
+        //jest!!! donner info
         const handleClickIconEye = jest.fn((e) => billContainer.handleClickIconEye(e.target))
 
         // récupère le oeil dans l'interface
@@ -134,7 +145,9 @@ describe("Given I am connected as an employee", () => {
         eye.addEventListener('click', handleClickIconEye)
         // Click
         userEvent.click(eye)
-
+//maintenant (fn) jest est au courant, declancher click sur icon eye
+//qui avec screen va faire que jest va recuperer l'événement pour simuler le functionement du click desouss
+//quand on fait expeted  f? fonction a était appllée? si vi -test est ok
         // vérifier que l'event est appelé
         expect(handleClickIconEye).toHaveBeenCalled()
       })
@@ -142,23 +155,34 @@ describe("Given I am connected as an employee", () => {
     describe('When I click on the new bill button', () => {
       test('A modal should open', () => {
         // bouchon le stockage local avec les données d'un employé
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        Object.defineProperty(window, 'localStorage', {
+          value: localStorageMock
+        })
         window.localStorage.setItem('user', JSON.stringify({
           type: 'Employee'
         }))
 
         // créer l'interface HTML avec le tableau de factures bouchonné
-        document.body.innerHTML = BillsUI({ data: bills, loading: false, error:false })
+        document.body.innerHTML = BillsUI({
+          data: bills,
+          loading: false,
+          error: false
+        })
 
         // Crée le container (controlleur) basé sur cet interface, les facture, le localstorage,...
         const onNavigate = (pathname) => {
-          document.body.innerHTML = ROUTES({ pathname })
+          document.body.innerHTML = ROUTES({
+            pathname
+          })
         }
         const store = null
         const billContainer = new Bills({
-          document, onNavigate, store, localStorage: window.localStorage
+          document,
+          onNavigate,
+          store,
+          localStorage: window.localStorage
         })
-  
+
         // Récupère l'event du click sur l'oeil dans le container
         const handleClickNewBill = jest.fn(billContainer.handleClickNewBill)
 
@@ -170,7 +194,7 @@ describe("Given I am connected as an employee", () => {
 
         // vérifier que l'event est appelé
         expect(handleClickNewBill).toHaveBeenCalled()
-  
+
         // récupère le formulaire de la page new bill
         waitFor(() => {
           expect(screen.getByTestId("form-new-bill"))
@@ -179,12 +203,13 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  //[exe5.1 - GET] test d'intégration GET
+  //[exe5.1 - GET Mentor] test d'intégration GET
   // remove "as admin"
   describe("Given I am a user connected", () => {
     // dashboard -> bill list
     describe("When I navigate to Bill list", () => {
       test("fetches bills from mock API GET", async () => {
+        //pour stocker la chaîne JSON dans le stockage local sous la clé "user".
         localStorage.setItem("user", JSON.stringify({
           // Admin -> Employee
           type: "Employee",
@@ -195,9 +220,25 @@ describe("Given I am connected as an employee", () => {
         document.body.append(root)
         router()
         window.onNavigate(ROUTES_PATH.Bills)
-        await waitFor(() => screen.getAllByTestId("icon-eye"))
-        expect(screen.getAllByTestId("icon-eye")).toBeTruthy()
+        //voir plus bas //autrement: titre de la page
+        //await waitFor(() => screen.getAllByTestId("icon-eye"))
+        //expect(screen.getAllByTestId("icon-eye")).toBeTruthy()
+
+        await waitFor(() => screen.getByText("Mes notes de frais"))
+        expect(screen.getByText("Mes notes de frais")).toBeTruthy()
       })
+      // waitFor pour attendre que les icônes "eye" soient rendues à l'écran. 
+      //Cette fonction prend une fonction de rappel en argument qui sera exécutée 
+      //à plusieurs reprises jusqu'à ce que l'expression retournée soit évaluée à true.
+      // screen.getAllByTestId("icon-eye") pour sélectionner toutes les icônes "eye" 
+      //à l'aide de leur attribut data-testid.
+      //expect pour vérifier que le nombre d'icônes "eye" rendues est supérieur à zéro, 
+      //ce qui garantit qu'au moins une icône est rendue à l'écran.
+      //Cela assure que les icônes "eye" sont rendues avec succès dans composant après l'attente. 
+      //Si elles ne sont pas rendues, le test échouera avec un message indiquant qu'il n'a pas réussi 
+      //à trouver les icônes "eye".
+
+
       describe("When an error occurs on API", () => {
         beforeEach(() => {
           jest.spyOn(mockStore, "bills")

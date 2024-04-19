@@ -27,7 +27,8 @@ export default class NewBill { // Définition de la classe NewBill
 
   handleChangeFile = e => { // Méthode pour gérer le changement de fichier
     e.preventDefault() // Empêcher le comportement par défaut du formulaire
-    //[exeMentor] On change comment on récupère le champs input file sinon on ne peut pas tester car 
+    
+    //[exeMentor POST] On change comment on récupère le champs input file sinon on ne peut pas tester car 
     // quand on simule on n'agit pas sur le champs html directement mais sur l'event
     // Donc peut pas faire de querySelector (html) mais c'est pareil de le récupère depuis l'event
     const file = e.target.files[0] // Sélection du fichier choisi
