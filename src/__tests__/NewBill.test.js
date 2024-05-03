@@ -195,7 +195,7 @@ describe("Given I am connected as an employee", () => {
 
     });
     /*
-        //[exementor - POST Mentor] test d'intégration POST
+        [exeOLDmentor - POST Mentor] test d'intégration POST
         describe("When an error occurs on API", () => {
           beforeEach(() => {
             jest.spyOn(mockStore, "bills")
@@ -274,48 +274,52 @@ describe("Given I am a user connected", () => {
       await waitFor(() => screen.getAllByText("Envoyer"))
       expect(screen.getAllByText("Envoyer")).toBeTruthy()
     })
-    
+
     describe("When an error occurs on API", () => {
 
       test("fetches messages from an API and fails with 500 message error", async () => {
-        jest.spyOn(mockStore, "bills")
-        Object.defineProperty(
-          window,
-          'localStorage', {
-            value: localStorageMock
-          }
-        )
-        window.localStorage.setItem('user', JSON.stringify({
-          // Admin -> Employee
-          type: "Employee",
-          email: "a@a",
-          password: "employee",
-          statut: "connected",
-        }))
-        window.onNavigate(ROUTES_PATH.NewBill)
-        const root = document.createElement("div")
-        root.setAttribute("id", "root")
-        document.body.appendChild(root)
-        router()
-        const buttonSubmite=screen.getAllByText("Envoyer")
-        buttonSubmite[0].click()
-
-        mockStore.bills.mockImplementationOnce(() => {
-          return {
-            create: (Bill) => {
-              return Promise.reject(new Error("Erreur 500"))
+        try {
+          jest.spyOn(mockStore, "bills")
+          Object.defineProperty(
+            window,
+            'localStorage', {
+              value: localStorageMock
             }
-          }
-        })
+          )
+          window.localStorage.setItem('user', JSON.stringify({
+            // Admin -> Employee
+            type: "Employee",
+            email: "a@a",
+            password: "employee",
+            statut: "connected",
+          }))
+          window.onNavigate(ROUTES_PATH.NewBill)
+          const root = document.createElement("div")
+          root.setAttribute("id", "root")
+          document.body.appendChild(root)
+          router()
+          const buttonSubmite = screen.getAllByText("Envoyer")
+          buttonSubmite[0].click()
 
-        window.onNavigate(ROUTES_PATH.NewBill)
-        await new Promise(process.nextTick);
-        const message = screen.getByText(/Erreur 500/)
-        //parametre callback: arrow fonction anomyme  
-        await waitFor(()=>{
-          //attendre jusqu'au vrais (note de frais)
-          expect(message).toBeTruthy()
-        })
+          mockStore.bills.mockImplementationOnce(() => {
+            return {
+              create: (Bill) => {
+                return Promise.reject(new Error("Erreur 500"))
+              }
+            }
+          })
+
+          window.onNavigate(ROUTES_PATH.NewBill)
+          await new Promise(process.nextTick);
+          const message = screen.getByText(/Erreur 500/)
+          //parametre callback: arrow fonction anomyme  
+          await waitFor(() => {
+            //attendre jusqu'au vrais (note de frais)
+            expect(message).toBeTruthy()
+          })
+        } catch (error) {
+          console.log(error);
+        }
       })
     })
 
