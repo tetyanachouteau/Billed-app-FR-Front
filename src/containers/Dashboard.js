@@ -213,7 +213,7 @@ export default class {
     bills.forEach(bill => {
       //[bug report - exe4] L'event sur les ligne de facture ne doivent concerner que les factures du regroupement
       // déplié sinon il ne retourve pas le container et on n'arrive pas à sélectionner la facture
-      // #status-bills-container${this.index}       
+      // ajout d'élement de contexte (quel liste) !!!!!!!!!!!!!!#status-bills-container${this.index}       
       $(`#status-bills-container${this.index} #open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })
 

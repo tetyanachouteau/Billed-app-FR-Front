@@ -55,10 +55,10 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      //to-do write expect expression
+      //EXE5EXEPT attente de 'icon active sur la page (surbrillance) to-do write expect expression
       //vérifier si la classe de l'icône de la fenêtre contient la classe "active-icon" 
       //indiquant que l'icône est active. Si la chaîne correspond au modèle d'expression régulière,
-      // le test passe avec succès.
+      // le test passe avec succès. si = à active-icon
       expect(windowIcon.getAttribute('class')).toEqual("active-icon")
     })
 
@@ -153,7 +153,7 @@ describe("Given I am connected as an employee", () => {
       })
     })
     describe('When I click on the new bill button', () => {
-      test('A modal should open', () => {
+      test('A new bill form page should open', () => {
         // bouchon le stockage local avec les données d'un employé
         Object.defineProperty(window, 'localStorage', {
           value: localStorageMock
@@ -183,10 +183,10 @@ describe("Given I am connected as an employee", () => {
           localStorage: window.localStorage
         })
 
-        // Récupère l'event du click sur l'oeil dans le container
+        // Récupère l'event du click sur new bill dans le container
         const handleClickNewBill = jest.fn(billContainer.handleClickNewBill)
 
-        // récupère le premier oeil dans l'interface
+        // récupère le button new bill dans l'interface
         const newbill = screen.getByTestId('btn-new-bill')
         newbill.addEventListener('click', handleClickNewBill);
         // Click

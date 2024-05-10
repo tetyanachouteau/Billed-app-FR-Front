@@ -41,7 +41,7 @@ export default class NewBill { // Définition de la classe NewBill
     // Vérifier si le fichier est au format JPG, PNG ou JPEG
     const allowedExtensions = ["jpg", "jpeg", "png"]; // Extensions de fichier autorisées
     const fileExtension = fileName.split(".").pop().toLowerCase(); // Extension du fichier choisi
-
+//si extensiton de fichier est dans le tableau autorisé !!!!!!!!!!!!!!!!
     if (!allowedExtensions.includes(fileExtension)) { // Si l'extension n'est pas autorisée
       e.target.value = ""; // Effacer la valeur du champ de fichier
       console.error("Pas bon format de fichier"); // Afficher un message d'erreur dans la console

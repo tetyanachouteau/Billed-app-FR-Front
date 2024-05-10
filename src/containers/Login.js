@@ -48,6 +48,8 @@ export default class Login {
       //[bug report - exe2] login admin qui fonctionne pour naviger vers Dashbord
       // `input[data-testid="employee-email-input"]` -> `input[data-testid="admin-email-input"]`
       // `input[data-testid="employee-password-input"]` -> `input[data-testid="admin-password-input"]`
+      //email: e.target.querySelector(`input[data-testid="employee-email-input"]`).value,
+      //password: e.target.querySelector(`input[data-testid="employee-password-input"]`).value,
       email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
       password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
       status: "connected"
